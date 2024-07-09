@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VNR VJIET Campus Navigator</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        img {
+            width: 150px;
+            margin-bottom: 20px;
+        }
+        select {
+            margin: 10px;
+            padding: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="logo2.jpeg" alt="VNR VJIET Logo">
+        <h1>VNR VJIET Campus Navigator</h1>
+        <form id="navigateForm">
+            <label for="start">Start Location:</label>
+            <select id="start" name="start">
+                <option value="Entrance">Entrance</option>
+                <option value="B block">B block</option>
+                <option value="Library">Library</option>
+                <option value="bb court">bb court</option>
+                <option value="Sports complex">Sports complex</option>
+            </select><br>
+            <label for="end">End Location:</label>
+            <select id="end" name="end">
+                <option value="Entrance">Entrance</option>
+                <option value="B block">B block</option>
+                <option value="Library">Library</option>
+                <option value="bb court">bb court</option>
+                <option value="Sports complex">Sports complex</option>
+            </select><br>
+            <button type="submit">Start Navigation</button>
+        </form>
+    </div>
+    <script>
+        document.getElementById('navigateForm').onsubmit = function() {
+            var start = document.getElementById('start').value;
+            var end = document.getElementById('end').value;
+            window.location.href = `map2.html?start=${start}&end=${end}`;
+            return false;
+        };
+    </script>
+</body>
+</html>

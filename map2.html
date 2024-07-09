@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VNR VJIET Campus Navigator</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(120deg, #2980b9, #6dd5fa, #ffffff);
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+        #map {
+            height: 70vh;
+            width: 80vw;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const startLocation = urlParams.get('start') || 'Entrance';
+        const endLocation = urlParams.get('end') || 'bb court';
+
+        // Initialize the map
+        var map = L.map('map').setView([17.539022, 78.389725], 17);
+
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Sample data for buildings (should be fetched from the backend)
+        var buildings = {
+            "B block": [17.5378353, 78.384566],
+            "Library": [17.5382435, 78.3825936],
+            "bb court": [17.5383557, 78.3848791],
+            "Entrance": [17.5414432, 78.3861392],
+            "Sports complex": [17.538468, 78.388489]
+        };
+
+        // Add markers for buildings
+        for (var name in buildings) {
+            L.marker(buildings[name]).addTo(map).bindPopup(name);
+        }
+
+        // Define the navigation path
+        var navigationPath = [
+            { start: startLocation, end: endLocation }
+        ];
+
+        // Function to convert text to speech
+        function speak(text) {
+            var msg = new SpeechSynthesisUtterance(text);
+            window.speechSynthesis.speak(msg);
+        }
+
+        // Navigate and give voice commands
+        function navigatePath(path) {
+            path.forEach((step, index) => {
+                var startCoords = buildings[step.start];
+                var endCoords = buildings[step.end];
+
+                // Check if start and end coordinates exist
+                if (!startCoords || !endCoords) {
+                    console.error(`Coordinates not found for: ${step.start} or ${step.end}`);
+                    return;
+                }
+
+                var latLngs = [startCoords, endCoords];
+                var polyline = L.polyline(latLngs, { color: 'red' }).addTo(map);
+
+                var distance = getDistance(startCoords[0], startCoords[1], endCoords[0], endCoords[1]);
+                setTimeout(() => {
+                    speak(`Walk from ${step.start} to ${step.end}. Distance: ${distance.toFixed(2)} meters.`);
+                }, index * 5000); // Adjust the delay as needed
+            });
+        }
+
+        // Function to calculate the distance between two points using the Haversine formula
+        function getDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371e3; // Radius of the Earth in meters
+            const dLat = (lat2 - lat1) * Math.PI / 180; // Convert degrees to radians
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a =
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            const distance = R * c; // Distance in meters
+            return distance;
+        }
+
+        // Start navigation
+        navigatePath(navigationPath);
+    </script>
+</body>
+</html>
